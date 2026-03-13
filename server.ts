@@ -88,18 +88,17 @@ app.get('/auth/callback', async (req, res) => {
             if (window.opener && !window.opener.closed) {
               window.opener.postMessage({ type: 'OAUTH_AUTH_SUCCESS', token, user }, '*');
               window.close();
+            } else {
+              // Fallback for mobile browsers where window.opener is lost
+              localStorage.setItem('quant_token', token);
+              localStorage.setItem('quant_user', JSON.stringify(user));
+              
+              // Redirect back to the main app
+              window.location.href = '/';
             }
-            
-            // Fallback for mobile browsers where window.opener is lost
-            localStorage.setItem('quant_token', token);
-            localStorage.setItem('quant_user', JSON.stringify(user));
-            
-            setTimeout(() => {
-              document.body.innerHTML = '<div style="font-family: sans-serif; padding: 40px 20px; text-align: center; color: #10b981; background: #09090b; height: 100vh; margin: 0;"><h2 style="margin-bottom: 10px;">登录成功！</h2><p style="color: #a1a1aa;">请手动关闭此页面并返回应用。</p></div>';
-            }, 500);
           </script>
           <div style="font-family: sans-serif; padding: 40px 20px; text-align: center; color: #10b981; background: #09090b; height: 100vh; margin: 0;">
-            <p>Authentication successful. Processing...</p>
+            <p>Authentication successful. Redirecting...</p>
           </div>
         </body>
       </html>
